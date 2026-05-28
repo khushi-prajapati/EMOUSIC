@@ -12,9 +12,9 @@ function ApiStatus() {
   }, [])
 
   return (
-    <aside className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-      <h2 className="text-base font-semibold text-slate-950">Backend status</h2>
-      <p className="mt-3 text-sm text-slate-600">{status}</p>
+    <aside className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <h2 className="text-base font-semibold text-slate-950 dark:text-white">Backend status</h2>
+      <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">{status}</p>
     </aside>
   )
 }

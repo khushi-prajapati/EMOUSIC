@@ -1,34 +1,59 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { AuthContext } from './authContext'
 import api from '../services/api'
+import { clearTokens, getAccessToken, setTokens } from '../services/tokenStorage'
 
 export function AuthProvider({ children }) {
-  const [accessToken, setAccessToken] = useState(() =>
-    localStorage.getItem('moodtunes_access_token'),
-  )
+  const [accessToken, setAccessToken] = useState(() => getAccessToken())
+  const [user, setUser] = useState(null)
+  const [isLoading, setIsLoading] = useState(Boolean(accessToken))
 
   const login = async (credentials) => {
-    const { data } = await api.post('/auth/token/', credentials)
+    const { data } = await api.post('/auth/login/', credentials)
 
-    localStorage.setItem('moodtunes_access_token', data.access)
-    localStorage.setItem('moodtunes_refresh_token', data.refresh)
-    setAccessToken(data.access)
+    setTokens(data.tokens)
+    setAccessToken(data.tokens.access)
+    setUser(data.user)
+  }
+
+  const signup = async (payload) => {
+    const { data } = await api.post('/auth/register/', payload)
+
+    setTokens(data.tokens)
+    setAccessToken(data.tokens.access)
+    setUser(data.user)
   }
 
   const logout = () => {
-    localStorage.removeItem('moodtunes_access_token')
-    localStorage.removeItem('moodtunes_refresh_token')
+    clearTokens()
     setAccessToken(null)
+    setUser(null)
+    setIsLoading(false)
   }
+
+  useEffect(() => {
+    if (!accessToken) {
+      return
+    }
+
+    api
+      .get('/auth/profile/')
+      .then((response) => setUser(response.data))
+      .catch(() => logout())
+      .finally(() => setIsLoading(false))
+  }, [accessToken])
 
   const value = useMemo(
     () => ({
       accessToken,
+      user,
+      isLoading,
       isAuthenticated: Boolean(accessToken),
       login,
+      signup,
       logout,
     }),
-    [accessToken],
+    [accessToken, user, isLoading],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
