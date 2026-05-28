@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt',
+    'admin_api',
     'authentication',
     'music',
     'users',
