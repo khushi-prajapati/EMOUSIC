@@ -11,7 +11,7 @@ function HomePage() {
         <h1 className="mt-3 max-w-3xl text-4xl font-bold text-slate-950 sm:text-5xl">
           MoodTunes pairs emotional context with the right soundtrack.
         </h1>
-        <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">
+        <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600 dark:text-slate-300">
           A clean full-stack foundation for mood-aware playlists, user profiles,
           JWT authentication, and future AI recommendation services.
         </p>
