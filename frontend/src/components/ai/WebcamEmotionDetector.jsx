@@ -1,14 +1,17 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import LoadingSpinner from '../LoadingSpinner'
 
-function WebcamEmotionDetector({ onDetected, isRecommending }) {
+function WebcamEmotionDetector({ onDetected, isRecommending, scanIntervalMs = 3000 }) {
   const videoRef = useRef(null)
   const canvasRef = useRef(null)
   const streamRef = useRef(null)
+  const isDetectingRef = useRef(false)
   const [cameraState, setCameraState] = useState('idle')
   const [error, setError] = useState('')
+  const [isAutoScanning, setIsAutoScanning] = useState(false)
   const [isDetecting, setIsDetecting] = useState(false)
   const [lastDetection, setLastDetection] = useState(null)
+  const [scanCount, setScanCount] = useState(0)
 
   useEffect(() => {
     return () => {
@@ -17,9 +20,66 @@ function WebcamEmotionDetector({ onDetected, isRecommending }) {
     }
   }, [])
 
+  const captureFrame = useCallback(() => {
+    const video = videoRef.current
+    const canvas = canvasRef.current
+
+    if (!video || !canvas || !video.videoWidth || !video.videoHeight) {
+      throw new Error('Camera is not ready yet.')
+    }
+
+    const maxWidth = 640
+    const scale = Math.min(1, maxWidth / video.videoWidth)
+    canvas.width = Math.round(video.videoWidth * scale)
+    canvas.height = Math.round(video.videoHeight * scale)
+
+    const context = canvas.getContext('2d')
+    context.drawImage(video, 0, 0, canvas.width, canvas.height)
+
+    return canvas.toDataURL('image/jpeg', 0.72)
+  }, [])
+
+  const runDetection = useCallback(async () => {
+    if (isDetectingRef.current || isRecommending || cameraState !== 'ready') {
+      return
+    }
+
+    setError('')
+    isDetectingRef.current = true
+    setIsDetecting(true)
+
+    try {
+      const image = captureFrame()
+      const detection = await onDetected(image)
+      setLastDetection(detection)
+      setScanCount((current) => current + 1)
+    } catch (scanError) {
+      const detail = scanError.response?.data?.detail || scanError.message
+      setError(detail || 'Unable to detect emotion from this frame.')
+    } finally {
+      isDetectingRef.current = false
+      setIsDetecting(false)
+    }
+  }, [cameraState, captureFrame, isRecommending, onDetected])
+
+  useEffect(() => {
+    if (!isAutoScanning || cameraState !== 'ready') {
+      return undefined
+    }
+
+    const firstScanId = window.setTimeout(runDetection, 0)
+    const intervalId = window.setInterval(runDetection, scanIntervalMs)
+
+    return () => {
+      window.clearTimeout(firstScanId)
+      window.clearInterval(intervalId)
+    }
+  }, [cameraState, isAutoScanning, runDetection, scanIntervalMs])
+
   const stopCamera = () => {
     streamRef.current?.getTracks().forEach((track) => track.stop())
     streamRef.current = null
+    setIsAutoScanning(false)
     setCameraState('idle')
   }
 
@@ -47,6 +107,7 @@ function WebcamEmotionDetector({ onDetected, isRecommending }) {
         videoRef.current.srcObject = stream
       }
       setCameraState('ready')
+      setIsAutoScanning(true)
     } catch (cameraError) {
       setCameraState('idle')
       setError(
@@ -57,43 +118,9 @@ function WebcamEmotionDetector({ onDetected, isRecommending }) {
     }
   }
 
-  const captureFrame = () => {
-    const video = videoRef.current
-    const canvas = canvasRef.current
-
-    if (!video || !canvas || !video.videoWidth || !video.videoHeight) {
-      throw new Error('Camera is not ready yet.')
-    }
-
-    const maxWidth = 720
-    const scale = Math.min(1, maxWidth / video.videoWidth)
-    canvas.width = Math.round(video.videoWidth * scale)
-    canvas.height = Math.round(video.videoHeight * scale)
-
-    const context = canvas.getContext('2d')
-    context.drawImage(video, 0, 0, canvas.width, canvas.height)
-
-    return canvas.toDataURL('image/jpeg', 0.82)
-  }
-
-  const handleScan = async () => {
-    setError('')
-    setIsDetecting(true)
-
-    try {
-      const image = captureFrame()
-      const detection = await onDetected(image)
-      setLastDetection(detection)
-    } catch (scanError) {
-      const detail = scanError.response?.data?.detail || scanError.message
-      setError(detail || 'Unable to detect emotion from this frame.')
-    } finally {
-      setIsDetecting(false)
-    }
-  }
-
   const isBusy = isDetecting || isRecommending
   const canScan = cameraState === 'ready' && !isBusy
+  const statusLabel = isAutoScanning ? 'Live scanning' : 'Paused'
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
@@ -116,7 +143,12 @@ function WebcamEmotionDetector({ onDetected, isRecommending }) {
           )}
           {isBusy && (
             <div className="absolute inset-0 grid place-items-center bg-slate-950/70 backdrop-blur-sm">
-              <LoadingSpinner label={isDetecting ? 'Scanning face...' : 'Finding songs...'} />
+              <LoadingSpinner label={isDetecting ? 'Analyzing frame...' : 'Refreshing songs...'} />
+            </div>
+          )}
+          {cameraState === 'ready' && (
+            <div className="absolute left-4 top-4 rounded-md bg-slate-950/80 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-white">
+              {statusLabel}
             </div>
           )}
         </div>
@@ -128,7 +160,7 @@ function WebcamEmotionDetector({ onDetected, isRecommending }) {
           AI mood scan
         </p>
         <h2 className="mt-3 text-2xl font-bold text-slate-950 dark:text-white">
-          Detect emotion from your face
+          Real-time emotion intelligence
         </h2>
 
         <div className="mt-5 flex flex-wrap gap-3">
@@ -152,12 +184,33 @@ function WebcamEmotionDetector({ onDetected, isRecommending }) {
           )}
           <button
             type="button"
-            onClick={handleScan}
+            onClick={runDetection}
             disabled={!canScan}
             className="rounded-md bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-teal-500 dark:hover:bg-teal-400"
           >
-            Scan emotion
+            Scan now
           </button>
+          <button
+            type="button"
+            onClick={() => setIsAutoScanning((current) => !current)}
+            disabled={cameraState !== 'ready'}
+            className="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+          >
+            {isAutoScanning ? 'Pause live scan' : 'Resume live scan'}
+          </button>
+        </div>
+
+        <div className="mt-5 grid grid-cols-2 gap-3 text-sm">
+          <div className="rounded-lg border border-slate-200 p-3 dark:border-slate-800">
+            <p className="text-slate-500 dark:text-slate-400">Interval</p>
+            <p className="mt-1 font-semibold text-slate-950 dark:text-white">
+              {Math.round(scanIntervalMs / 1000)}s
+            </p>
+          </div>
+          <div className="rounded-lg border border-slate-200 p-3 dark:border-slate-800">
+            <p className="text-slate-500 dark:text-slate-400">Scans</p>
+            <p className="mt-1 font-semibold text-slate-950 dark:text-white">{scanCount}</p>
+          </div>
         </div>
 
         {error && (

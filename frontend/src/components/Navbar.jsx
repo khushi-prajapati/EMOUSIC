@@ -47,6 +47,12 @@ function Navbar() {
               <NavLink to="/history" className={navLinkClass}>
                 History
               </NavLink>
+              <NavLink to="/analytics" className={navLinkClass}>
+                Analytics
+              </NavLink>
+              <NavLink to="/spotify" className={navLinkClass}>
+                Spotify
+              </NavLink>
               <NavLink to="/favorites" className={navLinkClass}>
                 Favorites
               </NavLink>
