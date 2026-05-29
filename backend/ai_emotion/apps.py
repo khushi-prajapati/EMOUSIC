@@ -1,6 +1,7 @@
 from django.apps import AppConfig
 
 
-class AdminApiConfig(AppConfig):
+class AiEmotionConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'admin_api'
+    name = 'ai_emotion'
+    verbose_name = 'AI Emotion'

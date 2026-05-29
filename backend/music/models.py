@@ -39,3 +39,50 @@ class RecommendedSong(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Favorite(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='favorites')
+    song = models.ForeignKey(RecommendedSong, on_delete=models.CASCADE, related_name='favorites')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('-created_at',)
+        constraints = [
+            models.UniqueConstraint(fields=('user', 'song'), name='unique_user_favorite_song'),
+        ]
+
+    def __str__(self):
+        return f'{self.user} favorited {self.song}'
+
+
+class Playlist(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='playlists')
+    name = models.CharField(max_length=120)
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    songs = models.ManyToManyField(RecommendedSong, through='PlaylistSong', related_name='playlists')
+
+    class Meta:
+        ordering = ('-created_at',)
+        constraints = [
+            models.UniqueConstraint(fields=('user', 'name'), name='unique_user_playlist_name'),
+        ]
+
+    def __str__(self):
+        return self.name
+
+
+class PlaylistSong(models.Model):
+    playlist = models.ForeignKey(Playlist, on_delete=models.CASCADE, related_name='playlist_songs')
+    song = models.ForeignKey(RecommendedSong, on_delete=models.CASCADE, related_name='playlist_songs')
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('-added_at',)
+        constraints = [
+            models.UniqueConstraint(fields=('playlist', 'song'), name='unique_playlist_song'),
+        ]
+
+    def __str__(self):
+        return f'{self.song} in {self.playlist}'
