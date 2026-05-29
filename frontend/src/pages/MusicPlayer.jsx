@@ -1,7 +1,15 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import AddToPlaylistControl from '../components/AddToPlaylistControl'
 import EmbeddedPlayer from '../components/EmbeddedPlayer'
 import SongCard from '../components/SongCard'
+import {
+  addFavorite,
+  addSongToPlaylist,
+  getFavorites,
+  getPlaylists,
+  removeFavorite,
+} from '../services/musicService'
 
 function MusicPlayer() {
   const songs = useMemo(() => {
@@ -13,6 +21,58 @@ function MusicPlayer() {
   }, [])
   const mood = sessionStorage.getItem('moodtunes_current_mood')
   const [activeSong, setActiveSong] = useState(songs[0] || null)
+  const [favoriteIds, setFavoriteIds] = useState(() => new Set(songs.filter((song) => song.is_favorite).map((song) => song.id)))
+  const [playlists, setPlaylists] = useState([])
+  const [pendingSongId, setPendingSongId] = useState(null)
+  const [error, setError] = useState('')
+  const [notice, setNotice] = useState('')
+
+  useEffect(() => {
+    Promise.all([getFavorites(), getPlaylists()])
+      .then(([favorites, playlistData]) => {
+        setFavoriteIds(new Set(favorites.map((favorite) => favorite.song.id)))
+        setPlaylists(playlistData)
+      })
+      .catch(() => setError('Unable to load saved library state.'))
+  }, [])
+
+  const handleToggleFavorite = async (song) => {
+    setError('')
+    setNotice('')
+    setPendingSongId(song.id)
+
+    try {
+      if (favoriteIds.has(song.id)) {
+        await removeFavorite(song.id)
+        setFavoriteIds((current) => {
+          const next = new Set(current)
+          next.delete(song.id)
+          return next
+        })
+      } else {
+        await addFavorite(song.id)
+        setFavoriteIds((current) => new Set(current).add(song.id))
+      }
+    } catch (apiError) {
+      const detail = apiError.response?.data?.song_id || apiError.response?.data?.detail
+      setError(Array.isArray(detail) ? detail.join(' ') : detail || 'Unable to update favorite.')
+    } finally {
+      setPendingSongId(null)
+    }
+  }
+
+  const handleAddToPlaylist = async (playlistId, song) => {
+    setError('')
+    setNotice('')
+
+    try {
+      await addSongToPlaylist(playlistId, song.id)
+      setNotice('Song added to playlist.')
+    } catch (apiError) {
+      const detail = apiError.response?.data?.song_id || apiError.response?.data?.detail
+      setError(Array.isArray(detail) ? detail.join(' ') : detail || 'Unable to add song to playlist.')
+    }
+  }
 
   if (songs.length === 0) {
     return (
@@ -38,6 +98,16 @@ function MusicPlayer() {
           {mood || 'Current playlist'}
         </p>
         <h1 className="mt-3 text-3xl font-bold text-slate-950 dark:text-white">Now playing</h1>
+        {notice && (
+          <p className="mt-4 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300">
+            {notice}
+          </p>
+        )}
+        {error && (
+          <p className="mt-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">
+            {error}
+          </p>
+        )}
         <div className="mt-6">
           <EmbeddedPlayer song={activeSong} />
         </div>
@@ -51,6 +121,12 @@ function MusicPlayer() {
               song={song}
               isActive={activeSong?.videoId === song.videoId}
               onPlay={setActiveSong}
+              isFavorite={favoriteIds.has(song.id)}
+              isFavoriteLoading={pendingSongId === song.id}
+              onToggleFavorite={handleToggleFavorite}
+              playlistAction={
+                <AddToPlaylistControl playlists={playlists} song={song} onAdd={handleAddToPlaylist} />
+              }
             />
           ))}
         </div>

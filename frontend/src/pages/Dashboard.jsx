@@ -29,6 +29,18 @@ function Dashboard() {
         >
           View history
         </Link>
+        <Link
+          to="/favorites"
+          className="rounded-md border border-slate-300 px-4 py-2 font-medium text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+        >
+          Favorites
+        </Link>
+        <Link
+          to="/playlists"
+          className="rounded-md border border-slate-300 px-4 py-2 font-medium text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+        >
+          Playlists
+        </Link>
       </div>
       <div className="mt-8 grid gap-4 sm:grid-cols-3">
         {['Mood history', 'Saved tracks', 'Recommendations'].map((label) => (

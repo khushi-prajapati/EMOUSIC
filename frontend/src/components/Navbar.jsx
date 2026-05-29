@@ -2,10 +2,14 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/useAuth'
 import { useTheme } from '../context/useTheme'
 
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api'
+const djangoAdminUrl = import.meta.env.VITE_DJANGO_ADMIN_URL || apiBaseUrl.replace(/\/api\/?$/, '/admin/')
+
 function Navbar() {
   const { isAuthenticated, logout, user } = useAuth()
   const { theme, toggleTheme } = useTheme()
   const navigate = useNavigate()
+  const canOpenAdmin = Boolean(user?.is_staff || user?.is_superuser)
 
   const navLinkClass = ({ isActive }) =>
     `rounded-md px-3 py-2 text-sm font-medium transition ${
@@ -37,9 +41,28 @@ function Navbar() {
               <NavLink to="/moods" className={navLinkClass}>
                 Mood Selection
               </NavLink>
+              <NavLink to="/ai-detect" className={navLinkClass}>
+                AI Detect
+              </NavLink>
               <NavLink to="/history" className={navLinkClass}>
                 History
               </NavLink>
+              <NavLink to="/favorites" className={navLinkClass}>
+                Favorites
+              </NavLink>
+              <NavLink to="/playlists" className={navLinkClass}>
+                Playlists
+              </NavLink>
+              {canOpenAdmin && (
+                <a
+                  href={djangoAdminUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="rounded-md border border-teal-700 px-3 py-2 text-sm font-medium text-teal-800 transition hover:bg-teal-50 dark:border-teal-400 dark:text-teal-200 dark:hover:bg-teal-950/40"
+                >
+                  Admin Panel
+                </a>
+              )}
             </>
           )}
           <button
