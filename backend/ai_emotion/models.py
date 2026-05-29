@@ -18,6 +18,11 @@ class EmotionDetectionHistory(models.Model):
     class Meta:
         ordering = ('-created_at',)
         verbose_name_plural = 'emotion detection history'
+        indexes = [
+            models.Index(fields=('user', '-created_at'), name='emotion_user_created_idx'),
+            models.Index(fields=('user', 'mapped_mood'), name='emotion_user_mood_idx'),
+            models.Index(fields=('detected_emotion',), name='emotion_detected_idx'),
+        ]
 
     def __str__(self):
         return f'{self.user} detected {self.detected_emotion}'

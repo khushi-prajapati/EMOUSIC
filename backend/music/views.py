@@ -17,6 +17,7 @@ from .serializers import (
     RecommendedSongSerializer,
 )
 from .services import YouTubeRecommendationService
+from .spotify import SpotifyService
 
 
 class MoodListView(APIView):
@@ -53,6 +54,19 @@ class RecommendView(APIView):
             },
             status=status.HTTP_201_CREATED,
         )
+
+
+class SpotifySearchView(APIView):
+    def get(self, request):
+        query = request.query_params.get('q', '').strip()
+        if not query:
+            return Response({'detail': 'Search query is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            limit = min(int(request.query_params.get('limit', 10)), 20)
+        except ValueError:
+            limit = 10
+        return Response({'results': SpotifyService().search_tracks(query, limit=limit)})
 
 
 class RecommendationHistoryView(generics.ListAPIView):

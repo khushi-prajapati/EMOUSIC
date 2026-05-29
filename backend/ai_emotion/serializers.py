@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from music.constants import SUPPORTED_MOODS
 from .models import EmotionDetectionHistory
 
 
@@ -19,3 +20,9 @@ class EmotionDetectionResponseSerializer(serializers.ModelSerializer):
         model = EmotionDetectionHistory
         fields = ('emotion', 'confidence', 'mapped_mood', 'created_at')
         read_only_fields = fields
+
+
+class PersonalizedRecommendationRequestSerializer(serializers.Serializer):
+    mood = serializers.ChoiceField(choices=list(SUPPORTED_MOODS.keys()))
+    emotion = serializers.CharField(required=False, allow_blank=True, max_length=32)
+    confidence = serializers.FloatField(required=False, min_value=0, max_value=1)

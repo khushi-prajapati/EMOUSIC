@@ -57,10 +57,51 @@
                     <div class="icon"><i class="fas fa-chart-line"></i></div>
                 </div>
             </div>
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-primary">
+                    <div class="inner">
+                        <h3>{{ metrics.emotion_scans }}</h3>
+                        <p>Emotion scans</p>
+                    </div>
+                    <div class="icon"><i class="fas fa-smile"></i></div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-danger">
+                    <div class="inner">
+                        <h3>{{ metrics.favorites }}</h3>
+                        <p>Favorites</p>
+                    </div>
+                    <div class="icon"><i class="fas fa-star"></i></div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-secondary">
+                    <div class="inner">
+                        <h3>{{ metrics.playlists }}</h3>
+                        <p>Playlists</p>
+                    </div>
+                    <div class="icon"><i class="fas fa-list"></i></div>
+                </div>
+            </div>
         </div>
     </div>
 
     <div class="col-lg-9 col-12">
+        <div class="row">
+            <div class="col-md-6 col-sm-12">
+                <div class="card mb-3">
+                    <div class="card-header"><h5 class="m-0">Mood trends</h5></div>
+                    <div class="card-body"><canvas id="moodTrendChart" height="160"></canvas></div>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-12">
+                <div class="card mb-3">
+                    <div class="card-header"><h5 class="m-0">Emotion trends</h5></div>
+                    <div class="card-body"><canvas id="emotionTrendChart" height="160"></canvas></div>
+                </div>
+            </div>
+        </div>
         <div class="row">
             <div class="col-md-6 col-sm-12">
                 {% for app in dashboard_list %}
@@ -147,4 +188,22 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block extrajs %}
+    {{ block.super }}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const chartOptions = {responsive: true, plugins: {legend: {display: false}}, scales: {y: {beginAtZero: true, ticks: {precision: 0}}}};
+        new Chart(document.getElementById('moodTrendChart'), {
+            type: 'bar',
+            data: {labels: {{ metrics.mood_labels|safe }}, datasets: [{data: {{ metrics.mood_values|safe }}, backgroundColor: '#17a2b8'}]},
+            options: chartOptions
+        });
+        new Chart(document.getElementById('emotionTrendChart'), {
+            type: 'bar',
+            data: {labels: {{ metrics.emotion_labels|safe }}, datasets: [{data: {{ metrics.emotion_values|safe }}, backgroundColor: '#20c997'}]},
+            options: chartOptions
+        });
+    </script>
 {% endblock %}

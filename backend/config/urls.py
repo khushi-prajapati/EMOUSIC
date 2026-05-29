@@ -20,6 +20,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/health/', health_check, name='health_check'),
     path('api/ai/', include('ai_emotion.urls')),
+    path('api/analytics/', include('analytics.urls')),
     path('api/auth/', include('authentication.urls')),
     path('api/music/', include('music.urls')),
 ]
