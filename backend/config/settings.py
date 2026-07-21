@@ -13,8 +13,13 @@ def env_list(name: str, default: str = '') -> list[str]:
     return [item.strip() for item in os.getenv(name, default).split(',') if item.strip()]
 
 
-SECRET_KEY = os.getenv('SECRET_KEY', 'change-me-in-production')
 DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
+SECRET_KEY = os.getenv('SECRET_KEY')
+if not SECRET_KEY:
+    if DEBUG:
+        SECRET_KEY = 'django-insecure-local-development-only'
+    else:
+        raise RuntimeError('SECRET_KEY must be set when DEBUG is false.')
 ALLOWED_HOSTS = env_list('ALLOWED_HOSTS', 'localhost,127.0.0.1')
 
 INSTALLED_APPS = [
@@ -45,6 +50,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'config.middleware.AdminNoStoreMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -106,6 +112,7 @@ CORS_ALLOWED_ORIGINS = env_list(
     'CORS_ALLOWED_ORIGINS',
     'http://localhost:5173,http://127.0.0.1:5173',
 )
+FRONTEND_SITE_URL = os.getenv('FRONTEND_SITE_URL', 'http://localhost:5173')
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -133,12 +140,21 @@ SIMPLE_JWT = {
 YOUTUBE_API_KEY = os.getenv('YOUTUBE_API_KEY', '')
 SPOTIFY_CLIENT_ID = os.getenv('SPOTIFY_CLIENT_ID', '')
 SPOTIFY_CLIENT_SECRET = os.getenv('SPOTIFY_CLIENT_SECRET', '')
+SPOTIFY_MARKET = os.getenv('SPOTIFY_MARKET', 'US')
 
 CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://localhost:6379/0')
 CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND', CELERY_BROKER_URL)
 CELERY_TASK_TIME_LIMIT = int(os.getenv('CELERY_TASK_TIME_LIMIT', '300'))
 CELERY_TASK_SOFT_TIME_LIMIT = int(os.getenv('CELERY_TASK_SOFT_TIME_LIMIT', '240'))
 CELERY_TIMEZONE = TIME_ZONE
+CELERY_TASK_ACKS_LATE = True
+CELERY_WORKER_PREFETCH_MULTIPLIER = int(os.getenv('CELERY_WORKER_PREFETCH_MULTIPLIER', '1'))
+CELERY_TASK_DEFAULT_QUEUE = os.getenv('CELERY_TASK_DEFAULT_QUEUE', 'default')
+CELERY_TASK_ROUTES = {
+    'tasks.analytics_tasks.*': {'queue': 'analytics'},
+    'tasks.cleanup_tasks.*': {'queue': 'maintenance'},
+    'tasks.recommendation_tasks.*': {'queue': 'recommendations'},
+}
 REDIS_CACHE_URL = os.getenv('REDIS_CACHE_URL', '')
 CACHES = {
     'default': (
@@ -163,6 +179,10 @@ SECURE_HSTS_SECONDS = int(os.getenv('SECURE_HSTS_SECONDS', '0'))
 SECURE_HSTS_INCLUDE_SUBDOMAINS = os.getenv('SECURE_HSTS_INCLUDE_SUBDOMAINS', 'False').lower() == 'true'
 SECURE_HSTS_PRELOAD = os.getenv('SECURE_HSTS_PRELOAD', 'False').lower() == 'true'
 CSRF_TRUSTED_ORIGINS = env_list('CSRF_TRUSTED_ORIGINS')
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = os.getenv('CSRF_COOKIE_HTTPONLY', 'False').lower() == 'true'
+X_FRAME_OPTIONS = os.getenv('X_FRAME_OPTIONS', 'DENY')
 
 JAZZMIN_SETTINGS = {
     'site_title': 'MoodTunes Admin',
@@ -175,10 +195,19 @@ JAZZMIN_SETTINGS = {
     'login_logo': 'admin/branding/moodtunes-logo.svg',
     'login_logo_dark': 'admin/branding/moodtunes-logo.svg',
     'site_icon': 'admin/branding/favicon.svg',
+    'custom_js': 'admin/js/moodtunes-admin.js',
     'show_sidebar': True,
     'navigation_expanded': True,
     'hide_apps': ['authentication'],
     'order_with_respect_to': ['users', 'music'],
+    'topmenu_links': [
+        {
+            'name': 'Main site',
+            'url': '/admin/main-site/',
+            'new_window': False,
+            'icon': 'fas fa-external-link-alt',
+        },
+    ],
     'icons': {
         'auth.Group': 'fas fa-users-cog',
         'users.User': 'fas fa-user',

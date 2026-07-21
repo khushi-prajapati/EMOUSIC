@@ -18,4 +18,5 @@ COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
+HEALTHCHECK --interval=20s --timeout=5s --retries=5 CMD curl -fsS http://localhost:8000/api/health/ || exit 1
 CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3"]

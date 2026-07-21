@@ -69,6 +69,25 @@ class SpotifySearchView(APIView):
         return Response({'results': SpotifyService().search_tracks(query, limit=limit)})
 
 
+class SpotifyPlaylistView(APIView):
+    def get(self, request):
+        playlist = request.query_params.get('playlist', '').strip()
+        if not playlist:
+            return Response({'detail': 'Spotify playlist URL or id is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            limit = min(int(request.query_params.get('limit', 25)), 50)
+        except ValueError:
+            limit = 25
+
+        return Response(SpotifyService().get_playlist(playlist, limit=limit))
+
+
+class SpotifyArtistView(APIView):
+    def get(self, request, artist_id):
+        return Response(SpotifyService().get_artist(artist_id))
+
+
 class RecommendationHistoryView(generics.ListAPIView):
     serializer_class = MoodHistorySerializer
     pagination_class = None

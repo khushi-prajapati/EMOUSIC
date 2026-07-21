@@ -10,7 +10,11 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+import { Activity, Brain, Music2, Users } from 'lucide-react'
 import LoadingSpinner from '../components/LoadingSpinner'
+import PageShell from '../components/ui/PageShell'
+import StatCard from '../components/ui/StatCard'
+import Surface from '../components/ui/Surface'
 import { getAnalyticsDashboard } from '../services/analyticsApi'
 
 function Analytics() {
@@ -31,7 +35,7 @@ function Analytics() {
 
   if (error) {
     return (
-      <p className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">
+      <p className="rounded-2xl border border-rose-300/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
         {error}
       </p>
     )
@@ -40,90 +44,82 @@ function Analytics() {
   const summary = analytics?.summary || {}
 
   return (
-    <section className="space-y-6">
-      <div>
-        <p className="text-sm font-semibold uppercase tracking-wide text-teal-700 dark:text-teal-300">
-          Intelligence dashboard
-        </p>
-        <h1 className="mt-3 text-3xl font-bold text-slate-950 dark:text-white">
-          MoodTunes analytics
-        </h1>
-      </div>
-
+    <PageShell
+      eyebrow="Intelligence dashboard"
+      title="MoodTunes analytics"
+      subtitle="A futuristic control surface for mood trends, emotion statistics, recommendation frequency, and library signals."
+    >
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {[
-          ['Users', summary.total_users],
-          ['Active 30d', summary.active_users_30d],
-          ['Recommendations', summary.recommendations],
-          ['Emotion scans', summary.emotion_scans],
-        ].map(([label, value]) => (
-          <article
-            key={label}
-            className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900"
-          >
-            <p className="text-sm text-slate-500 dark:text-slate-400">{label}</p>
-            <p className="mt-2 text-3xl font-bold text-slate-950 dark:text-white">{value || 0}</p>
-          </article>
-        ))}
+        <StatCard icon={Users} label="Users" value={summary.total_users} />
+        <StatCard icon={Activity} label="Active 30d" value={summary.active_users_30d} tone="from-emerald-300 to-cyan-400" />
+        <StatCard icon={Music2} label="Recommendations" value={summary.recommendations} tone="from-fuchsia-300 to-pink-500" />
+        <StatCard icon={Brain} label="Emotion scans" value={summary.emotion_scans} tone="from-violet-300 to-cyan-400" />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <ChartPanel title="Favorite moods">
           <BarChart data={analytics.favorite_moods || []}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="label" />
-            <YAxis allowDecimals={false} />
-            <Tooltip />
-            <Bar dataKey="total" fill="#0f766e" radius={[4, 4, 0, 0]} />
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
+            <XAxis dataKey="label" stroke="#94a3b8" />
+            <YAxis allowDecimals={false} stroke="#94a3b8" />
+            <Tooltip contentStyle={tooltipStyle} />
+            <Bar dataKey="total" fill="#22d3ee" radius={[8, 8, 0, 0]} />
           </BarChart>
         </ChartPanel>
         <ChartPanel title="Emotion trends">
           <BarChart data={analytics.emotion_trends || []}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="label" />
-            <YAxis allowDecimals={false} />
-            <Tooltip />
-            <Bar dataKey="total" fill="#334155" radius={[4, 4, 0, 0]} />
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
+            <XAxis dataKey="label" stroke="#94a3b8" />
+            <YAxis allowDecimals={false} stroke="#94a3b8" />
+            <Tooltip contentStyle={tooltipStyle} />
+            <Bar dataKey="total" fill="#d946ef" radius={[8, 8, 0, 0]} />
           </BarChart>
         </ChartPanel>
         <ChartPanel title="Recommendation frequency">
           <LineChart data={analytics.recommendation_frequency || []}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="day" />
-            <YAxis allowDecimals={false} />
-            <Tooltip />
-            <Line type="monotone" dataKey="total" stroke="#0f766e" strokeWidth={2} />
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
+            <XAxis dataKey="day" stroke="#94a3b8" />
+            <YAxis allowDecimals={false} stroke="#94a3b8" />
+            <Tooltip contentStyle={tooltipStyle} />
+            <Line type="monotone" dataKey="total" stroke="#34d399" strokeWidth={3} dot={false} />
           </LineChart>
         </ChartPanel>
-        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-          <h2 className="font-semibold text-slate-950 dark:text-white">Top songs</h2>
+        <Surface className="p-5">
+          <h2 className="font-bold text-white">Top songs</h2>
           <div className="mt-4 space-y-3">
-            {(analytics.top_songs || []).map((song) => (
-              <div key={`${song.title}-${song.channel_title}`} className="flex justify-between gap-4 text-sm">
+            {(analytics.top_songs || []).map((song, index) => (
+              <div key={`${song.title}-${song.channel_title}`} className="flex justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.05] p-3 text-sm">
                 <div className="min-w-0">
-                  <p className="truncate font-medium text-slate-950 dark:text-white">{song.title}</p>
-                  <p className="truncate text-slate-500 dark:text-slate-400">{song.channel_title}</p>
+                  <p className="truncate font-semibold text-white">{index + 1}. {song.title}</p>
+                  <p className="truncate text-slate-400">{song.channel_title}</p>
                 </div>
-                <span className="font-semibold text-slate-700 dark:text-slate-200">{song.total}</span>
+                <span className="font-black text-cyan-200">{song.total}</span>
               </div>
             ))}
           </div>
-        </div>
+        </Surface>
       </div>
-    </section>
+    </PageShell>
   )
+}
+
+const tooltipStyle = {
+  background: 'rgba(2, 6, 23, 0.92)',
+  border: '1px solid rgba(255,255,255,0.12)',
+  borderRadius: '14px',
+  color: '#e2e8f0',
 }
 
 function ChartPanel({ title, children }) {
   return (
-    <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-      <h2 className="font-semibold text-slate-950 dark:text-white">{title}</h2>
+    <Surface className="p-5">
+      <h2 className="font-bold text-white">{title}</h2>
       <div className="mt-4 h-72">
         <ResponsiveContainer width="100%" height="100%">
           {children}
         </ResponsiveContainer>
       </div>
-    </div>
+    </Surface>
   )
 }
 

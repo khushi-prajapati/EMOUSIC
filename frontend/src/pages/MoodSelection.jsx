@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import MoodCard from '../components/MoodCard'
 import LoadingSpinner from '../components/LoadingSpinner'
+import PageShell from '../components/ui/PageShell'
+import Surface from '../components/ui/Surface'
 import { getMoods, getRecommendations } from '../services/musicService'
 
 function MoodSelection() {
@@ -37,31 +39,25 @@ function MoodSelection() {
   }
 
   return (
-    <section>
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-wide text-teal-700 dark:text-teal-300">
-            Choose your mood
-          </p>
-          <h1 className="mt-3 text-3xl font-bold text-slate-950 dark:text-white">
-            Pick a feeling. MoodTunes will find the music.
-          </h1>
-        </div>
-        {isRecommending && <LoadingSpinner label="Finding songs..." />}
-      </div>
+    <PageShell
+      eyebrow="Mood engine"
+      title="Pick a feeling. MoodTunes will find the music."
+      subtitle="Each mood routes through the existing recommendation engine and creates a fresh playable YouTube queue."
+      action={isRecommending ? <LoadingSpinner label="Finding songs..." /> : null}
+    >
 
       {error && (
-        <p className="mt-6 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">
+        <p className="rounded-2xl border border-rose-300/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
           {error}
         </p>
       )}
 
       {isLoading ? (
-        <div className="mt-8">
+        <Surface className="p-6">
           <LoadingSpinner label="Loading moods..." />
-        </div>
+        </Surface>
       ) : (
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {moods.map((mood) => (
             <MoodCard
               key={mood.value}
@@ -72,7 +68,7 @@ function MoodSelection() {
           ))}
         </div>
       )}
-    </section>
+    </PageShell>
   )
 }
 

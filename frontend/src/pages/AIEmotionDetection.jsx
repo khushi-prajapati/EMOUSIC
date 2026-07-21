@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom'
 import EmbeddedPlayer from '../components/EmbeddedPlayer'
 import WebcamEmotionDetector from '../components/ai/WebcamEmotionDetector'
 import SongCard from '../components/SongCard'
+import Button from '../components/ui/Button'
+import PageShell from '../components/ui/PageShell'
+import Surface from '../components/ui/Surface'
 import { detectEmotion, getPersonalizedRecommendations } from '../services/aiApi'
 
 function AIEmotionDetection() {
@@ -62,18 +65,11 @@ function AIEmotionDetection() {
   }
 
   return (
-    <section className="space-y-8">
-      <div className="mb-8 max-w-3xl">
-        <p className="text-sm font-semibold uppercase tracking-wide text-teal-700 dark:text-teal-300">
-          Real-time AI mode
-        </p>
-        <h1 className="mt-3 text-3xl font-bold text-slate-950 dark:text-white">
-          Live emotion detection with personalized music intelligence.
-        </h1>
-        <p className="mt-3 text-slate-600 dark:text-slate-300">
-          MoodTunes scans every few seconds, detects emotion changes, and refreshes recommendations only when the mapped music mood changes.
-        </p>
-      </div>
+    <PageShell
+      eyebrow="Real-time AI mode"
+      title="Live emotion detection with personalized music intelligence."
+      subtitle="MoodTunes scans every few seconds, detects emotion changes, and refreshes recommendations only when the mapped music mood changes."
+    >
 
       <WebcamEmotionDetector onDetected={handleDetected} isRecommending={isRecommending} />
 
@@ -81,71 +77,70 @@ function AIEmotionDetection() {
         <div className="space-y-4">
           <EmbeddedPlayer song={activeSong} />
           {detection && (
-            <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-              <p className="text-sm font-semibold uppercase tracking-wide text-teal-700 dark:text-teal-300">
+            <Surface className="p-5">
+              <p className="text-xs font-bold uppercase tracking-[0.24em] text-cyan-200">
                 Current AI reading
               </p>
               <dl className="mt-4 grid grid-cols-3 gap-3 text-sm">
                 <div>
-                  <dt className="text-slate-500 dark:text-slate-400">Emotion</dt>
-                  <dd className="mt-1 font-semibold capitalize text-slate-950 dark:text-white">
+                  <dt className="text-slate-400">Emotion</dt>
+                  <dd className="mt-1 font-bold capitalize text-white">
                     {detection.emotion}
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-slate-500 dark:text-slate-400">Mood</dt>
-                  <dd className="mt-1 font-semibold capitalize text-slate-950 dark:text-white">
+                  <dt className="text-slate-400">Mood</dt>
+                  <dd className="mt-1 font-bold capitalize text-white">
                     {detection.mapped_mood}
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-slate-500 dark:text-slate-400">Confidence</dt>
-                  <dd className="mt-1 font-semibold text-slate-950 dark:text-white">
+                  <dt className="text-slate-400">Confidence</dt>
+                  <dd className="mt-1 font-bold text-white">
                     {Math.round(Number(detection.confidence) * 100)}%
                   </dd>
                 </div>
               </dl>
-            </div>
+            </Surface>
           )}
         </div>
 
-        <aside className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <Surface as="aside" className="p-5">
           <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-wide text-teal-700 dark:text-teal-300">
+              <p className="text-xs font-bold uppercase tracking-[0.24em] text-cyan-200">
                 Personalized queue
               </p>
-              <h2 className="mt-2 text-2xl font-bold text-slate-950 dark:text-white">
+              <h2 className="mt-2 text-2xl font-black text-white">
                 Real-time recommendations
               </h2>
             </div>
-            <button
+            <Button
               type="button"
               onClick={openPlayer}
               disabled={!songs.length}
-              className="rounded-md bg-slate-950 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200"
             >
               Open player
-            </button>
+            </Button>
           </div>
 
           {personalization && (
             <div className="mt-4 grid gap-3 text-sm sm:grid-cols-3">
-              <div className="rounded-lg border border-slate-200 p-3 dark:border-slate-800">
-                <p className="text-slate-500 dark:text-slate-400">Favorites</p>
-                <p className="mt-1 font-semibold text-slate-950 dark:text-white">
+              <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-3">
+                <p className="text-slate-400">Favorites</p>
+                <p className="mt-1 font-bold text-white">
                   {personalization.favorite_count}
                 </p>
               </div>
-              <div className="rounded-lg border border-slate-200 p-3 dark:border-slate-800">
-                <p className="text-slate-500 dark:text-slate-400">Playlist songs</p>
-                <p className="mt-1 font-semibold text-slate-950 dark:text-white">
+              <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-3">
+                <p className="text-slate-400">Playlist songs</p>
+                <p className="mt-1 font-bold text-white">
                   {personalization.playlist_song_count}
                 </p>
               </div>
-              <div className="rounded-lg border border-slate-200 p-3 dark:border-slate-800">
-                <p className="text-slate-500 dark:text-slate-400">Mood memory</p>
-                <p className="mt-1 truncate font-semibold capitalize text-slate-950 dark:text-white">
+              <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-3">
+                <p className="text-slate-400">Mood memory</p>
+                <p className="mt-1 truncate font-bold capitalize text-white">
                   {personalization.recent_moods?.join(', ') || 'New'}
                 </p>
               </div>
@@ -153,7 +148,7 @@ function AIEmotionDetection() {
           )}
 
           {recommendationError && (
-            <p className="mt-5 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">
+            <p className="mt-5 rounded-2xl border border-rose-300/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
               {recommendationError}
             </p>
           )}
@@ -169,14 +164,14 @@ function AIEmotionDetection() {
                 />
               ))
             ) : (
-              <div className="rounded-lg border border-dashed border-slate-300 p-6 text-center text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">
+              <div className="rounded-2xl border border-dashed border-white/15 p-6 text-center text-sm text-slate-400">
                 Open the camera to begin live AI recommendations.
               </div>
             )}
           </div>
-        </aside>
+        </Surface>
       </div>
-    </section>
+    </PageShell>
   )
 }
 

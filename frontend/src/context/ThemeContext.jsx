@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { ThemeContext } from './themeContext'
 
 export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState(() => localStorage.getItem('moodtunes_theme') || 'light')
+  const [theme, setTheme] = useState(() => localStorage.getItem('moodtunes_theme') || 'dark')
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark')

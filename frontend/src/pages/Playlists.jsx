@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import LoadingSpinner from '../components/LoadingSpinner'
+import Button from '../components/ui/Button'
+import EmptyState from '../components/ui/EmptyState'
+import PageShell from '../components/ui/PageShell'
+import Surface from '../components/ui/Surface'
 import { createPlaylist, deletePlaylist, getPlaylists } from '../services/musicService'
 
 function Playlists() {
@@ -57,87 +61,89 @@ function Playlists() {
   }
 
   return (
-    <section>
-      <p className="text-sm font-semibold uppercase tracking-wide text-teal-700 dark:text-teal-300">
-        Your library
-      </p>
-      <h1 className="mt-3 text-3xl font-bold text-slate-950 dark:text-white">Playlists</h1>
+    <PageShell
+      eyebrow="Your library"
+      title="Playlists"
+      subtitle="Create and curate custom collections from your AI-generated recommendations."
+    >
 
-      <form
-        onSubmit={handleCreate}
-        className="mt-6 grid gap-3 rounded-lg border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900"
-      >
+      <Surface as="form" onSubmit={handleCreate} className="grid gap-3 p-5">
         <div className="grid gap-3 sm:grid-cols-[1fr_1.5fr_auto]">
           <input
             name="name"
             value={form.name}
             onChange={handleChange}
             placeholder="Playlist name"
-            className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-950 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
+            className="min-h-11 rounded-xl border border-white/10 bg-white/[0.07] px-3 py-2 text-sm text-white outline-none placeholder:text-slate-500 focus:border-cyan-300/60"
           />
           <input
             name="description"
             value={form.description}
             onChange={handleChange}
             placeholder="Description"
-            className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-950 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
+            className="min-h-11 rounded-xl border border-white/10 bg-white/[0.07] px-3 py-2 text-sm text-white outline-none placeholder:text-slate-500 focus:border-cyan-300/60"
           />
-          <button
+          <Button
             type="submit"
             disabled={isCreating}
-            className="rounded-md bg-slate-950 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200"
           >
             {isCreating ? 'Creating...' : 'Create'}
-          </button>
+          </Button>
         </div>
-      </form>
+      </Surface>
 
       {error && (
-        <p className="mt-6 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">
+        <p className="rounded-2xl border border-rose-300/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
           {error}
         </p>
       )}
 
       {isLoading ? (
-        <div className="mt-8">
+        <Surface className="p-6">
           <LoadingSpinner label="Loading playlists..." />
-        </div>
+        </Surface>
+      ) : playlists.length === 0 ? (
+        <EmptyState
+          title="No playlists yet"
+          message="Create your first playlist, then add songs from recommendations, favorites, or history."
+        />
       ) : (
-        <div className="mt-8 grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-2">
           {playlists.map((playlist) => (
-            <article
+            <Surface
               key={playlist.id}
-              className="rounded-lg border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900"
+              interactive
+              className="p-5"
             >
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <h2 className="text-lg font-semibold text-slate-950 dark:text-white">{playlist.name}</h2>
-                  <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                  <h2 className="text-lg font-bold text-white">{playlist.name}</h2>
+                  <p className="mt-1 text-sm text-slate-400">
                     {playlist.song_count || 0} songs
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => handleDelete(playlist.id)}
-                  className="rounded-md border border-red-300 px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-950/40"
+                  className="rounded-xl border border-rose-300/30 px-3 py-2 text-sm font-semibold text-rose-200 hover:bg-rose-500/10"
                 >
                   Delete
                 </button>
               </div>
               {playlist.description && (
-                <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">{playlist.description}</p>
+                <p className="mt-3 text-sm text-slate-300">{playlist.description}</p>
               )}
               <Link
                 to={`/playlists/${playlist.id}`}
-                className="mt-4 inline-flex rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+                className="mt-4 inline-flex rounded-xl border border-white/10 px-3 py-2 text-sm font-semibold text-slate-200 hover:bg-white/10"
               >
                 Open playlist
               </Link>
-            </article>
+            </Surface>
           ))}
         </div>
       )}
-    </section>
+    </PageShell>
   )
 }
 

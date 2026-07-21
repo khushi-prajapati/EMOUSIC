@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { Camera, Pause, ScanFace, Square, Zap } from 'lucide-react'
 import LoadingSpinner from '../LoadingSpinner'
+import Button from '../ui/Button'
+import Surface from '../ui/Surface'
 
 function WebcamEmotionDetector({ onDetected, isRecommending, scanIntervalMs = 3000 }) {
   const videoRef = useRef(null)
@@ -124,7 +127,7 @@ function WebcamEmotionDetector({ onDetected, isRecommending, scanIntervalMs = 30
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-      <div className="overflow-hidden rounded-lg border border-slate-200 bg-slate-950 shadow-sm dark:border-slate-800">
+      <Surface className="overflow-hidden border-cyan-300/20 bg-slate-950/70">
         <div className="relative aspect-video bg-slate-950">
           <video
             ref={videoRef}
@@ -136,7 +139,8 @@ function WebcamEmotionDetector({ onDetected, isRecommending, scanIntervalMs = 30
           {cameraState !== 'ready' && (
             <div className="absolute inset-0 grid place-items-center bg-slate-950 text-center text-slate-300">
               <div>
-                <p className="text-lg font-semibold text-white">Camera preview</p>
+                <Camera className="mx-auto mb-4 text-cyan-200" size={42} />
+                <p className="text-lg font-bold text-white">Camera preview</p>
                 <p className="mt-2 text-sm text-slate-400">Open your camera to scan your mood.</p>
               </div>
             </div>
@@ -147,101 +151,108 @@ function WebcamEmotionDetector({ onDetected, isRecommending, scanIntervalMs = 30
             </div>
           )}
           {cameraState === 'ready' && (
-            <div className="absolute left-4 top-4 rounded-md bg-slate-950/80 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-white">
+            <>
+              <div className="absolute inset-6 rounded-[2rem] border border-cyan-300/40 shadow-[0_0_45px_rgba(34,211,238,0.24)]" />
+              <div className="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 animate-pulse bg-cyan-300/50 shadow-[0_0_24px_rgba(34,211,238,0.8)]" />
+              <div className="absolute left-4 top-4 rounded-full border border-cyan-300/30 bg-slate-950/80 px-3 py-2 text-xs font-bold uppercase tracking-[0.2em] text-cyan-100">
               {statusLabel}
-            </div>
+              </div>
+            </>
           )}
         </div>
         <canvas ref={canvasRef} className="hidden" />
-      </div>
+      </Surface>
 
-      <aside className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-        <p className="text-sm font-semibold uppercase tracking-wide text-teal-700 dark:text-teal-300">
+      <Surface as="aside" className="p-5">
+        <p className="text-xs font-bold uppercase tracking-[0.24em] text-cyan-200">
           AI mood scan
         </p>
-        <h2 className="mt-3 text-2xl font-bold text-slate-950 dark:text-white">
+        <h2 className="mt-3 text-2xl font-black text-white">
           Real-time emotion intelligence
         </h2>
 
         <div className="mt-5 flex flex-wrap gap-3">
           {cameraState === 'ready' ? (
-            <button
+            <Button
               type="button"
               onClick={stopCamera}
-              className="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+              variant="secondary"
             >
+              <Square size={16} />
               Close camera
-            </button>
+            </Button>
           ) : (
-            <button
+            <Button
               type="button"
               onClick={startCamera}
               disabled={cameraState === 'starting'}
-              className="rounded-md bg-slate-950 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200"
             >
+              <Camera size={16} />
               {cameraState === 'starting' ? 'Opening...' : 'Open camera'}
-            </button>
+            </Button>
           )}
-          <button
+          <Button
             type="button"
             onClick={runDetection}
             disabled={!canScan}
-            className="rounded-md bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-teal-500 dark:hover:bg-teal-400"
+            variant="secondary"
           >
+            <ScanFace size={16} />
             Scan now
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
             onClick={() => setIsAutoScanning((current) => !current)}
             disabled={cameraState !== 'ready'}
-            className="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+            variant="ghost"
           >
+            <Pause size={16} />
             {isAutoScanning ? 'Pause live scan' : 'Resume live scan'}
-          </button>
+          </Button>
         </div>
 
         <div className="mt-5 grid grid-cols-2 gap-3 text-sm">
-          <div className="rounded-lg border border-slate-200 p-3 dark:border-slate-800">
-            <p className="text-slate-500 dark:text-slate-400">Interval</p>
-            <p className="mt-1 font-semibold text-slate-950 dark:text-white">
+          <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-3">
+            <p className="text-slate-400">Interval</p>
+            <p className="mt-1 font-bold text-white">
               {Math.round(scanIntervalMs / 1000)}s
             </p>
           </div>
-          <div className="rounded-lg border border-slate-200 p-3 dark:border-slate-800">
-            <p className="text-slate-500 dark:text-slate-400">Scans</p>
-            <p className="mt-1 font-semibold text-slate-950 dark:text-white">{scanCount}</p>
+          <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-3">
+            <p className="text-slate-400">Scans</p>
+            <p className="mt-1 font-bold text-white">{scanCount}</p>
           </div>
         </div>
 
         {error && (
-          <p className="mt-5 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">
+          <p className="mt-5 rounded-2xl border border-rose-300/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
             {error}
           </p>
         )}
 
         {lastDetection && (
-          <div className="mt-5 rounded-lg border border-teal-200 bg-teal-50 p-4 dark:border-teal-900 dark:bg-teal-950/40">
-            <p className="text-sm text-teal-800 dark:text-teal-200">Detected emotion</p>
-            <p className="mt-1 text-2xl font-bold capitalize text-slate-950 dark:text-white">
+          <div className="mt-5 rounded-2xl border border-cyan-300/30 bg-cyan-300/10 p-4">
+            <p className="inline-flex items-center gap-2 text-sm text-cyan-100"><Zap size={15} /> Detected emotion</p>
+            <p className="mt-1 text-3xl font-black capitalize text-white">
               {lastDetection.emotion}
             </p>
             <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
               <div>
-                <dt className="text-slate-500 dark:text-slate-400">Confidence</dt>
-                <dd className="font-semibold text-slate-950 dark:text-white">
+                <dt className="text-slate-400">Confidence</dt>
+                <dd className="font-bold text-white">
                   {Math.round(Number(lastDetection.confidence) * 100)}%
                 </dd>
               </div>
               <div>
-                <dt className="text-slate-500 dark:text-slate-400">Music mood</dt>
-                <dd className="font-semibold capitalize text-slate-950 dark:text-white">
+                <dt className="text-slate-400">Music mood</dt>
+                <dd className="font-bold capitalize text-white">
                   {lastDetection.mapped_mood}
                 </dd>
               </div>
             </dl>
           </div>
         )}
-      </aside>
+      </Surface>
     </div>
   )
 }

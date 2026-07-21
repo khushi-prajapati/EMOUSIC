@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
+import { Server } from 'lucide-react'
 import api from '../services/api'
+import Surface from './ui/Surface'
 
 function ApiStatus() {
   const [status, setStatus] = useState('Checking API...')
@@ -12,10 +14,17 @@ function ApiStatus() {
   }, [])
 
   return (
-    <aside className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-      <h2 className="text-base font-semibold text-slate-950 dark:text-white">Backend status</h2>
-      <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">{status}</p>
-    </aside>
+    <Surface as="aside" className="p-4">
+      <div className="flex items-center gap-3">
+        <span className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-300/10 text-emerald-200">
+          <Server size={18} />
+        </span>
+        <div>
+          <h2 className="text-sm font-bold text-white">Backend status</h2>
+          <p className="mt-1 text-sm text-slate-300">{status}</p>
+        </div>
+      </div>
+    </Surface>
   )
 }
 

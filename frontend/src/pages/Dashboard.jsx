@@ -1,61 +1,67 @@
-import { useAuth } from '../context/useAuth'
 import { Link } from 'react-router-dom'
+import { BarChart3, Brain, Heart, History, ListMusic, Sparkles } from 'lucide-react'
+import AudioVisualizer from '../components/ui/AudioVisualizer'
+import Button from '../components/ui/Button'
+import PageShell from '../components/ui/PageShell'
+import StatCard from '../components/ui/StatCard'
+import Surface from '../components/ui/Surface'
+import { useAuth } from '../context/useAuth'
+
+const actions = [
+  ['Choose a mood', '/moods', Sparkles],
+  ['AI detect', '/ai-detect', Brain],
+  ['Analytics', '/analytics', BarChart3],
+  ['Playlists', '/playlists', ListMusic],
+]
 
 function Dashboard() {
   const { user } = useAuth()
 
   return (
-    <section>
-      <p className="text-sm font-semibold uppercase tracking-wide text-teal-700 dark:text-teal-300">
-        Your space
-      </p>
-      <h1 className="mt-3 text-3xl font-bold text-slate-950 dark:text-white">
-        Welcome, {user?.username || 'listener'}
-      </h1>
-      <p className="mt-3 max-w-2xl text-slate-600 dark:text-slate-300">
-        Your protected dashboard is connected to JWT authentication and ready for
-        mood history, saved tracks, and recommendations.
-      </p>
-      <div className="mt-6 flex flex-wrap gap-3">
-        <Link
-          to="/moods"
-          className="rounded-md bg-slate-950 px-4 py-2 font-medium text-white hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200"
-        >
-          Choose a mood
-        </Link>
-        <Link
-          to="/history"
-          className="rounded-md border border-slate-300 px-4 py-2 font-medium text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
-        >
-          View history
-        </Link>
-        <Link
-          to="/favorites"
-          className="rounded-md border border-slate-300 px-4 py-2 font-medium text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
-        >
-          Favorites
-        </Link>
-        <Link
-          to="/playlists"
-          className="rounded-md border border-slate-300 px-4 py-2 font-medium text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
-        >
-          Playlists
-        </Link>
+    <PageShell
+      eyebrow="Command center"
+      title={`Welcome, ${user?.username || 'listener'}`}
+      subtitle="Your AI music workspace is ready for mood selection, live emotion scanning, saved tracks, analytics, and playlist curation."
+      action={<Button as={Link} to="/moods">Generate queue</Button>}
+    >
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCard icon={Sparkles} label="Mood engine" value="Live" />
+        <StatCard icon={Brain} label="AI scanner" value="Ready" tone="from-fuchsia-300 to-violet-500" />
+        <StatCard icon={Heart} label="Library sync" value="On" tone="from-rose-300 to-pink-500" />
+        <StatCard icon={History} label="History" value="Tracked" tone="from-emerald-300 to-cyan-400" />
       </div>
-      <div className="mt-8 grid gap-4 sm:grid-cols-3">
-        {['Mood history', 'Saved tracks', 'Recommendations'].map((label) => (
-          <article
-            key={label}
-            className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900"
-          >
-            <h2 className="font-semibold text-slate-900 dark:text-white">{label}</h2>
-            <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
-              Ready for feature work.
-            </p>
-          </article>
-        ))}
-      </div>
-    </section>
+
+      <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+        <Surface className="p-6">
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.24em] text-cyan-200">Realtime signal</p>
+              <h2 className="mt-3 text-3xl font-black text-white">Your listening state</h2>
+              <p className="mt-3 max-w-xl text-slate-300">
+                MoodTunes keeps the current recommendation context in sync with your mood selections, camera reads, and saved library.
+              </p>
+            </div>
+            <AudioVisualizer bars={34} />
+          </div>
+        </Surface>
+
+        <Surface className="p-6">
+          <p className="text-xs font-bold uppercase tracking-[0.24em] text-fuchsia-200">Quick launch</p>
+          <div className="mt-5 grid gap-3 sm:grid-cols-2">
+            {actions.map(([label, to, Icon]) => (
+              <Link
+                key={to}
+                to={to}
+                className="group rounded-2xl border border-white/10 bg-white/[0.06] p-4 transition hover:border-cyan-300/40 hover:bg-white/[0.1]"
+              >
+                <Icon className="text-cyan-200 transition group-hover:scale-110" size={22} />
+                <p className="mt-3 text-sm font-bold text-white">{label}</p>
+              </Link>
+            ))}
+          </div>
+        </Surface>
+      </section>
+    </PageShell>
   )
 }
 

@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom'
 import AddToPlaylistControl from '../components/AddToPlaylistControl'
 import LoadingSpinner from '../components/LoadingSpinner'
 import SongCard from '../components/SongCard'
+import EmptyState from '../components/ui/EmptyState'
+import PageShell from '../components/ui/PageShell'
+import Surface from '../components/ui/Surface'
 import {
   addFavorite,
   addSongToPlaylist,
@@ -73,49 +76,42 @@ function History() {
   }
 
   return (
-    <section>
-      <p className="text-sm font-semibold uppercase tracking-wide text-teal-700 dark:text-teal-300">
-        Recent activity
-      </p>
-      <h1 className="mt-3 text-3xl font-bold text-slate-950 dark:text-white">
-        Recommendation history
-      </h1>
+    <PageShell
+      eyebrow="Recent activity"
+      title="Recommendation history"
+      subtitle="A timeline of mood searches and generated queues."
+    >
 
       {isLoading && (
-        <div className="mt-8">
+        <Surface className="p-6">
           <LoadingSpinner label="Loading history..." />
-        </div>
+        </Surface>
       )}
 
       {error && (
-        <p className="mt-6 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">
+        <p className="rounded-2xl border border-rose-300/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
           {error}
         </p>
       )}
 
       {notice && (
-        <p className="mt-6 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300">
+        <p className="rounded-2xl border border-emerald-300/30 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-200">
           {notice}
         </p>
       )}
 
       {!isLoading && !error && history.length === 0 && (
-        <div className="mt-8 rounded-lg border border-slate-200 bg-white p-8 text-center dark:border-slate-800 dark:bg-slate-900">
-          <h2 className="text-xl font-semibold text-slate-950 dark:text-white">No history yet</h2>
-          <p className="mt-2 text-slate-600 dark:text-slate-300">
-            Your mood searches and recommendations will appear here.
-          </p>
-        </div>
+        <EmptyState title="No history yet" message="Your mood searches and recommendations will appear here." />
       )}
 
-      <div className="mt-8 space-y-6">
+      <div className="space-y-6">
         {history.map((item) => (
-          <article key={item.id} className="rounded-lg border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
+          <Surface key={item.id} className="p-5">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <h2 className="text-lg font-semibold capitalize text-slate-950 dark:text-white">
+              <h2 className="text-lg font-bold capitalize text-white">
                 {item.mood}
               </h2>
-              <time className="text-sm text-slate-500 dark:text-slate-400">
+              <time className="text-sm text-slate-400">
                 {new Date(item.searched_at).toLocaleString()}
               </time>
             </div>
@@ -139,10 +135,10 @@ function History() {
                 />
               ))}
             </div>
-          </article>
+          </Surface>
         ))}
       </div>
-    </section>
+    </PageShell>
   )
 }
 

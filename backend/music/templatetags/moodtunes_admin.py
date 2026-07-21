@@ -1,6 +1,7 @@
 import json
 
 from django import template
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db.models import Count
 
@@ -8,6 +9,16 @@ from ai_emotion.models import EmotionDetectionHistory
 from music.models import Favorite, MoodHistory, Playlist, RecommendedSong
 
 register = template.Library()
+
+
+@register.simple_tag
+def frontend_site_url():
+    return settings.FRONTEND_SITE_URL
+
+
+@register.simple_tag
+def admin_main_site_url():
+    return '/admin/main-site/'
 
 
 @register.simple_tag

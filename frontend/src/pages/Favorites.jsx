@@ -2,6 +2,9 @@ import { useEffect, useMemo, useState } from 'react'
 import AddToPlaylistControl from '../components/AddToPlaylistControl'
 import LoadingSpinner from '../components/LoadingSpinner'
 import SongCard from '../components/SongCard'
+import EmptyState from '../components/ui/EmptyState'
+import PageShell from '../components/ui/PageShell'
+import Surface from '../components/ui/Surface'
 import {
   addSongToPlaylist,
   getFavorites,
@@ -61,40 +64,35 @@ function Favorites() {
   }
 
   return (
-    <section>
-      <p className="text-sm font-semibold uppercase tracking-wide text-teal-700 dark:text-teal-300">
-        Saved songs
-      </p>
-      <h1 className="mt-3 text-3xl font-bold text-slate-950 dark:text-white">Favorites</h1>
+    <PageShell
+      eyebrow="Saved songs"
+      title="Favorites"
+      subtitle="Your high-signal library of tracks worth returning to."
+    >
 
       {isLoading && (
-        <div className="mt-8">
+        <Surface className="p-6">
           <LoadingSpinner label="Loading favorites..." />
-        </div>
+        </Surface>
       )}
 
       {notice && (
-        <p className="mt-6 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300">
+        <p className="rounded-2xl border border-emerald-300/30 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-200">
           {notice}
         </p>
       )}
 
       {error && (
-        <p className="mt-6 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">
+        <p className="rounded-2xl border border-rose-300/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
           {error}
         </p>
       )}
 
       {!isLoading && !error && favorites.length === 0 && (
-        <div className="mt-8 rounded-lg border border-slate-200 bg-white p-8 text-center dark:border-slate-800 dark:bg-slate-900">
-          <h2 className="text-xl font-semibold text-slate-950 dark:text-white">No favorites yet</h2>
-          <p className="mt-2 text-slate-600 dark:text-slate-300">
-            Favorite songs from your recommendations to keep them here.
-          </p>
-        </div>
+        <EmptyState title="No favorites yet" message="Favorite songs from your recommendations to keep them here." />
       )}
 
-      <div className="mt-8 space-y-3">
+      <div className="space-y-3">
         {favorites.map((favorite) => (
           <SongCard
             key={favorite.id}
@@ -112,7 +110,7 @@ function Favorites() {
           />
         ))}
       </div>
-    </section>
+    </PageShell>
   )
 }
 

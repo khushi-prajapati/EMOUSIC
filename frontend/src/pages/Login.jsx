@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import InputField from '../components/InputField'
+import Button from '../components/ui/Button'
 import { useAuth } from '../context/useAuth'
 import AuthLayout from '../layouts/AuthLayout'
 
@@ -57,7 +58,7 @@ function Login() {
       title="Sign in to your MoodTunes account."
       subtitle="Keep your music profile, moods, and recommendations tied to your account."
     >
-      <h1 className="text-2xl font-bold text-slate-950 dark:text-white">Login</h1>
+      <h1 className="text-2xl font-black text-white">Login</h1>
       <form onSubmit={handleSubmit} className="mt-6 space-y-4">
         <InputField
           label="Username or email"
@@ -76,18 +77,18 @@ function Login() {
           autoComplete="current-password"
           error={errors.password}
         />
-        {apiError && <p className="text-sm text-red-700 dark:text-red-300">{apiError}</p>}
-        <button
+        {apiError && <p className="text-sm text-rose-300">{apiError}</p>}
+        <Button
           type="submit"
           disabled={isSubmitting}
-          className="w-full rounded-md bg-slate-950 px-4 py-2 font-medium text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200"
+          className="w-full"
         >
           {isSubmitting ? 'Signing in...' : 'Sign in'}
-        </button>
+        </Button>
       </form>
-      <p className="mt-5 text-sm text-slate-600 dark:text-slate-300">
+      <p className="mt-5 text-sm text-slate-300">
         New to MoodTunes?{' '}
-        <Link className="font-semibold text-teal-700 dark:text-teal-300" to="/signup">
+        <Link className="font-semibold text-cyan-200" to="/signup">
           Create an account
         </Link>
       </p>
