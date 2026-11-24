@@ -15,7 +15,8 @@ RUN pip install --no-cache-dir --upgrade pip \
 
 COPY . .
 COPY docker/entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+RUN sed -i 's/\r$//' /entrypoint.sh \
+    && chmod +x /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
 HEALTHCHECK --interval=20s --timeout=5s --retries=5 CMD curl -fsS http://localhost:8000/api/health/ || exit 1

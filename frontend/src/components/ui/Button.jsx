@@ -4,7 +4,7 @@ import { springTransition } from '../../animations/motion'
 
 const variants = {
   primary:
-    'border-transparent bg-gradient-to-r from-cyan-400 via-fuchsia-500 to-emerald-300 text-slate-950 shadow-[0_0_28px_rgba(34,211,238,0.25)] hover:shadow-[0_0_38px_rgba(217,70,239,0.32)]',
+    'border-transparent bg-gradient-to-r from-cyan-400 via-fuchsia-500 to-emerald-300 text-[#020617] shadow-[0_0_28px_rgba(34,211,238,0.25)] hover:shadow-[0_0_38px_rgba(217,70,239,0.32)]',
   secondary:
     'border-white/15 bg-white/[0.08] text-white hover:border-cyan-300/50 hover:bg-white/[0.12]',
   ghost:

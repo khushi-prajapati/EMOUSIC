@@ -72,10 +72,10 @@ function Spotify() {
   return (
     <section className="space-y-6">
       <div>
-        <p className="text-sm font-semibold uppercase tracking-wide text-teal-700 dark:text-teal-300">
+        <p className="text-sm font-semibold uppercase tracking-wide text-teal-300">
           Spotify enrichment
         </p>
-        <h1 className="mt-3 text-3xl font-bold text-slate-950 dark:text-white">
+        <h1 className="mt-3 text-3xl font-bold text-white">
           Search Spotify tracks
         </h1>
       </div>
@@ -85,12 +85,12 @@ function Spotify() {
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Search tracks, artists, or albums"
-          className="min-h-11 flex-1 rounded-md border border-slate-300 bg-white px-4 text-slate-950 outline-none focus:border-teal-600 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
+          className="min-h-11 flex-1 rounded-md border px-4 outline-none focus:border-teal-600 border-slate-700 bg-slate-950 text-white"
         />
         <button
           type="submit"
           disabled={isLoading || !query.trim()}
-          className="rounded-md bg-slate-950 px-5 py-2 font-medium text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200"
+          className="rounded-md px-5 py-2 font-medium disabled:cursor-not-allowed disabled:opacity-60 bg-white text-slate-950 hover:bg-slate-200"
         >
           Search
         </button>
@@ -101,12 +101,12 @@ function Spotify() {
           value={playlistInput}
           onChange={(event) => setPlaylistInput(event.target.value)}
           placeholder="Paste a public Spotify playlist URL"
-          className="min-h-11 flex-1 rounded-md border border-slate-300 bg-white px-4 text-slate-950 outline-none focus:border-teal-600 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
+          className="min-h-11 flex-1 rounded-md border px-4 outline-none focus:border-teal-600 border-slate-700 bg-slate-950 text-white"
         />
         <button
           type="submit"
           disabled={isLoading || !playlistInput.trim()}
-          className="rounded-md border border-slate-300 px-5 py-2 font-medium text-slate-800 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:text-slate-100 dark:hover:bg-slate-800"
+          className="rounded-md border px-5 py-2 font-medium disabled:cursor-not-allowed disabled:opacity-60 border-slate-700 text-slate-100 hover:bg-slate-800"
         >
           Import Playlist
         </button>
@@ -114,23 +114,23 @@ function Spotify() {
 
       {isLoading && <LoadingSpinner label="Searching Spotify..." />}
       {error && (
-        <p className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">
+        <p className="rounded-md border px-4 py-3 text-sm border-red-900 bg-red-950/40 text-red-300">
           {error}
         </p>
       )}
 
       {artist && (
-        <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <section className="rounded-lg border p-5 shadow-sm border-slate-800 bg-slate-900">
           <div className="flex flex-col gap-4 sm:flex-row">
             {artist.image_url && (
               <img src={artist.image_url} alt="" className="h-28 w-28 rounded-md object-cover" />
             )}
             <div className="min-w-0 flex-1">
-              <h2 className="text-xl font-semibold text-slate-950 dark:text-white">{artist.name}</h2>
-              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+              <h2 className="text-xl font-semibold text-white">{artist.name}</h2>
+              <p className="mt-1 text-sm text-slate-400">
                 {artist.followers.toLocaleString()} followers, popularity {artist.popularity}
               </p>
-              <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+              <p className="mt-2 text-sm text-slate-300">
                 {artist.genres.length ? artist.genres.join(', ') : 'No genre metadata available'}
               </p>
             </div>
@@ -142,12 +142,12 @@ function Spotify() {
                 href={album.spotify_url}
                 target="_blank"
                 rel="noreferrer"
-                className="flex gap-3 rounded-md border border-slate-200 p-3 text-sm hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-950"
+                className="flex gap-3 rounded-md border p-3 text-sm border-slate-800 hover:bg-slate-950"
               >
                 {album.image_url && <img src={album.image_url} alt="" className="h-12 w-12 rounded object-cover" />}
                 <span className="min-w-0">
-                  <span className="block truncate font-medium text-slate-950 dark:text-white">{album.name}</span>
-                  <span className="text-slate-500 dark:text-slate-400">{album.release_date}</span>
+                  <span className="block truncate font-medium text-white">{album.name}</span>
+                  <span className="text-slate-400">{album.release_date}</span>
                 </span>
               </a>
             ))}
@@ -156,14 +156,14 @@ function Spotify() {
       )}
 
       {playlist && (
-        <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <section className="rounded-lg border p-5 shadow-sm border-slate-800 bg-slate-900">
           <div className="flex flex-col gap-4 sm:flex-row">
             {playlist.image_url && (
               <img src={playlist.image_url} alt="" className="h-24 w-24 rounded-md object-cover" />
             )}
             <div className="min-w-0">
-              <h2 className="text-xl font-semibold text-slate-950 dark:text-white">{playlist.name}</h2>
-              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+              <h2 className="text-xl font-semibold text-white">{playlist.name}</h2>
+              <p className="mt-1 text-sm text-slate-400">
                 {playlist.owner}, {playlist.track_total} tracks
               </p>
               {playlist.spotify_url && (
@@ -171,7 +171,7 @@ function Spotify() {
                   href={playlist.spotify_url}
                   target="_blank"
                   rel="noreferrer"
-                  className="mt-3 inline-flex rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+                  className="mt-3 inline-flex rounded-md border px-3 py-2 text-sm font-medium border-slate-700 text-slate-200 hover:bg-slate-800"
                 >
                   Open Spotify
                 </a>
@@ -197,32 +197,32 @@ function TrackGrid({ tracks, onArtistClick }) {
       {tracks.map((track) => (
         <article
           key={track.id}
-          className="grid grid-cols-[88px_1fr] gap-4 rounded-lg border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900"
+          className="grid grid-cols-[88px_1fr] gap-4 rounded-lg border p-3 shadow-sm border-slate-800 bg-slate-900"
         >
           {track.image_url ? (
             <img
               src={track.image_url}
               alt=""
-              className="h-20 w-20 rounded-md bg-slate-100 object-cover dark:bg-slate-800"
+              className="h-20 w-20 rounded-md object-cover bg-slate-800"
             />
           ) : (
-            <div className="h-20 w-20 rounded-md bg-slate-100 dark:bg-slate-800" />
+            <div className="h-20 w-20 rounded-md bg-slate-800" />
           )}
           <div className="min-w-0">
-            <h2 className="truncate font-semibold text-slate-950 dark:text-white">{track.title}</h2>
-            <div className="mt-1 flex flex-wrap gap-x-2 gap-y-1 text-sm text-slate-500 dark:text-slate-400">
+            <h2 className="truncate font-semibold text-white">{track.title}</h2>
+            <div className="mt-1 flex flex-wrap gap-x-2 gap-y-1 text-sm text-slate-400">
               {track.artists.map((artist) => (
                 <button
                   key={`${track.id}-${artist.id || artist.name}`}
                   type="button"
                   onClick={() => onArtistClick(artist.id)}
-                  className="max-w-full truncate text-left hover:text-teal-700 dark:hover:text-teal-300"
+                  className="max-w-full truncate text-left hover:text-teal-300"
                 >
                   {artist.name}
                 </button>
               ))}
             </div>
-            <p className="mt-1 truncate text-sm text-slate-500 dark:text-slate-400">{track.album}</p>
+            <p className="mt-1 truncate text-sm text-slate-400">{track.album}</p>
             <div className="mt-3 flex flex-wrap gap-2">
               {track.preview_url && (
                 <audio controls src={track.preview_url} className="h-9 max-w-full" />
@@ -232,7 +232,7 @@ function TrackGrid({ tracks, onArtistClick }) {
                   href={track.spotify_url}
                   target="_blank"
                   rel="noreferrer"
-                  className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+                  className="rounded-md border px-3 py-2 text-sm font-medium border-slate-700 text-slate-200 hover:bg-slate-800"
                 >
                   Open Spotify
                 </a>

@@ -47,7 +47,7 @@ function Navbar() {
   const navLinkClass = ({ isActive }) =>
     `inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold transition ${
       isActive
-        ? 'bg-white text-slate-950 shadow-[0_0_30px_rgba(255,255,255,0.16)]'
+        ? 'bg-white text-slate-950 shadow-[0_0_30px_rgba(34,211,238,0.18)]'
         : 'text-slate-300 hover:bg-white/10 hover:text-white'
     }`
 
@@ -63,7 +63,7 @@ function Navbar() {
     <header className="sticky top-0 z-40 border-b border-white/10 bg-slate-950/70 backdrop-blur-2xl">
       <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
         <NavLink to="/" className="group inline-flex items-center gap-3" onClick={() => setIsOpen(false)}>
-          <span className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-cyan-300 via-fuchsia-500 to-emerald-300 text-slate-950 shadow-[0_0_36px_rgba(34,211,238,0.35)]">
+          <span className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-cyan-300 via-fuchsia-500 to-emerald-300 text-[#020617] shadow-[0_0_36px_rgba(34,211,238,0.35)]">
             <Music2 size={22} />
           </span>
           <span>
